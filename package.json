@@ -2,9 +2,11 @@
   "name": "scheduling-system",
   "version": "1.0.0",
   "description": "A scheduling system which can be used for calendars, roll systems and more.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./dist/tests/script"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,12 @@
     "Roll"
   ],
   "author": "Sean Lodhammar",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.2",
+    "@types/uuid": "^9.0.4"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
 }
