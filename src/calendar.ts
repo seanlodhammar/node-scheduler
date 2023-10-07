@@ -60,7 +60,7 @@ export class Calendar {
         const months = getAllMonths(startDate);
         let monthIteration = startMonth - 1;
         const startMonthObj = months[monthIteration];
-        const dates = [];
+        const dates: any[] = [];
         const difference = endDay - startDay;
         for(let i = startDay; i <= difference; i++) {
             if(i < 1) {
