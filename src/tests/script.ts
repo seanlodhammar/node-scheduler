@@ -1,5 +1,5 @@
 import { Calendar } from "../index";
 
-const calendar = new Calendar('us');
-const calendarGetDateTest = calendar.getDate('21/1/2024');
-console.log(calendarGetDateTest)
+const calendar = new Calendar('eu');
+const calendarGetDateTest = calendar.getDate('29/2/23');
+const calendarGetDatesTest = calendar.getDates('21/12/23', '22/12/23');
