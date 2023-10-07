@@ -1,4 +1,6 @@
 import { v4 as uuid } from 'uuid';
+import { getDate } from './util/date';
+import { getAllMonths } from './util/util';
 
 interface CalendarItem {
     id: string;
@@ -9,14 +11,16 @@ interface CalendarItem {
     };
 }
 
+
+
 interface ICalendar {
     [years: string]: {
-        [months: string]: CalendarItem[];
+        [months: string]: {
+            [days: string]: CalendarItem[]
+        }
     }
 }
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 
 export class Calendar {
@@ -42,91 +46,66 @@ export class Calendar {
     // "date" in form of "10/10/2023" or "10/10/23"
     public getDate(date: string) {
         try {
-            const split = date.split('/');
-            const dateArr : number[] = [];
-            split.forEach((element, _) => {
-                const elInt = parseInt(element);
-                if(!elInt || isNaN(elInt)) {
-                    return false;
-                }
-                dateArr.push(elInt);
-            })
-            if(dateArr.length < 3 || dateArr.length > 3) {
-                return false;
-            }
-            if(dateArr.length === 3) {
-                
-                const day = dateArr[0];
-                const month = dateArr[1];
-                const year = dateArr[2];
-                
-                if(year.toString().length <= 1 || year.toString().length > 4) {
-                    return false;
-                }
-                let dayStr = day.toString();
-                let monthStr = month.toString();
-                if(day.toString().length === 1) {
-                    dayStr = `0${day}`;
-                };
-                if(month.toString().length === 1) {
-                    monthStr = `0${month}`;
-                }
-    
-                let param = '';
-
-                if(this.config === 'eu') {
-                    param = `${year.toString().length === 4 ? year : ''}${year.toString().length === 2 ? `20${year}` : ''}-${monthStr}-${dayStr}T00:00:00`;
-                } else if(this.config === 'us') {
-                    param = `${year.toString().length === 4 ? year : ''}${year.toString().length === 2 ? `20${year}` : ''}-${dayStr}-${monthStr}`;
-                } else {
-                    return false;
-                }
-
-                const data = new Date(param);
-                const isValid = Date.parse(param);
-    
-                if(isNaN(isValid)) {
-                    return false;
-                }
-                                
-                const dayDate = data.getDate();
-                const dayName = days[data.getDay()];
-                const monthDate = data.getMonth();
-                const monthName = months[monthDate];
-                const yearDate = data.getFullYear();
-                const localeDateStr = data.toLocaleDateString();
-                
-                return { month: { name: monthName, date: monthDate + 1 }, day: { name: dayName, date: dayDate }, year: yearDate, date: data, dateStr: localeDateStr };
-            }
-
-
-
+            const data = getDate(date, this.config);
+            if(!data) return false;
+            return data; // add additional data such as custom calendar class data
         } catch (err) {
             console.log(err);
             return false;
         }
-
-
     }
 
     // "date" in form of (0)5/10/2023 or 10/(0)5/2023 depending on config
     // "dates" in form of (0)5/10/2023-10/10/2023 or 10/(0)5/2023-10/10/2023 depending on config
-    public getDates(dates: string) {
- 
-        const split = dates.split('/');
-        if(split.length < 3) {
-            return;
+    public getDates(startDate: string, endDate: string) {
+        const startDateSplit = startDate.split('/');
+        const endDateSplit = endDate.split('/');
+
+        const startDay = parseInt(startDateSplit[0]);
+        const endDay = parseInt(endDateSplit[0]);
+        const startMonth = parseInt(startDateSplit[1]);
+        const endMonth = parseInt(endDateSplit[1]);
+        const startYear = parseInt(startDateSplit[2]);
+        const endYear = parseInt(endDateSplit[2]);
+        
+        if(isNaN(startDay) || isNaN(endDay) || isNaN(startMonth) || isNaN(endMonth)) {
+            return false;
         }
-        if(this.config === 'eu' || this.config !== 'us') {
-            
-            return;
-        } else {
-            return;
+
+        if(startMonth < 1 || startMonth > 12 || endMonth < 1 || endMonth > 12) {
+            return false;
+        }
+
+        const months = getAllMonths(startDate);
+        let monthIteration = startMonth - 1;
+        const startMonthObj = months[monthIteration];
+        const dates = [];
+        const difference = endDay - startDay;
+        for(let i = startDay; i <= difference; i++) {
+            if(i < 1) {
+                console.log('no')
+                continue;
+            }
+            if(i > startMonthObj.days) {
+                if(startMonth !== endMonth) {
+                    const monthDiff = endMonth - startMonth;
+                    if(monthDiff > 1) {
+                        
+                    }
+                }
+                dates.push(false);
+                continue;
+            }
+            const date = this.getDate(`${i}/${startMonth}/${startYear}`);
+            dates.push(date);
         };
+        
+        console.log(dates);
+
     }
 
 
-    public setItem(date: Date | string) {
+    public setItem(date: Date | string, data?: CalendarItem['data']) {
         const id = uuid();
 
     };
