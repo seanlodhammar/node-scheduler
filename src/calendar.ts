@@ -1,33 +1,14 @@
 import { v4 as uuid } from 'uuid';
-import { getDate } from './util/date';
-import { getAllMonths } from './util/util';
-
-interface CalendarItem {
-    id: string;
-    dateStr: string;
-    date: Date;
-    data: {
-        [props: string]: any;
-    };
-}
-
-
-
-interface ICalendar {
-    [years: string]: {
-        [months: string]: {
-            [days: string]: CalendarItem[]
-        }
-    }
-}
-
-
+import { GetDate, getDate as getDateUtil } from './util/date';
+import { getAllMonths, separateDateAndParse } from './util/util';
+import { CalendarObj, CalendarItem } from './types/calendar';
+import { DatesOrFalse } from './util/util';
 
 export class Calendar {
-    private calendar : ICalendar = {};
+    private calendar : CalendarObj = {};
     private config : 'eu' | 'us' = 'eu';
     
-    constructor(configuration?: 'eu' | 'us', existingCalendar?: ICalendar) {
+    constructor(configuration?: 'eu' | 'us', existingCalendar?: CalendarObj) {
         if(existingCalendar) {
             this.calendar = existingCalendar;
         };
@@ -44,11 +25,11 @@ export class Calendar {
     };
 
     // "date" in form of "10/10/2023" or "10/10/23"
-    public getDate(date: string) {
+    public getDate(date?: string | Date): GetDate | false {
         try {
-            const data = getDate(date, this.config);
+            const data = getDateUtil(date || new Date(), this.config);
             if(!data) return false;
-            return data; // add additional data such as custom calendar class data
+            return { items: this.calendar[data.dateStr] || null, ...data }; // add additional data such as custom calendar item data
         } catch (err) {
             console.log(err);
             return false;
@@ -99,15 +80,64 @@ export class Calendar {
             const date = this.getDate(`${i}/${startMonth}/${startYear}`);
             dates.push(date);
         };
-        
-        console.log(dates);
 
     }
 
 
-    public setItem(date: Date | string, data?: CalendarItem['data']) {
-        const id = uuid();
+    public setItem(date: Date | string, data: CalendarItem['data'], options?: { time?: string; startTime?: string; endTime?: string; }) {
+        const dateData = this.getDate(date);
 
+        if(!dateData) return false;
+
+        const { dateStr, date: dateInstance } = dateData;
+
+
+        if(options && options.time) {
+ 
+            // Time in 24 hour form e.g. 8:00 for 8am and 17:00 for 5pm
+            const { time } = options;
+            const split = time.split(':');
+            const hour = split[0];
+            const hourInt = parseInt(hour);
+            const minute = split[1];
+            const minuteInt = parseInt(minute);
+
+            if(isNaN(hourInt) || isNaN(minuteInt)) return false;
+            if(hourInt < 0 || hourInt > 23 || minuteInt < 0 || minuteInt > 59) return false;
+        
+            const id = uuid();
+            const timeStr = `${hourInt}:${minuteInt}`
+
+            const itemObj : CalendarItem = {
+                id: id,
+                dateStr: dateStr,
+                date: dateInstance,
+                data: data,
+                duration: {
+                    hours: 0,
+                    minutes: 30,
+                },
+                time: {
+                    str: timeStr,
+                    hour: hourInt,
+                    minute: minuteInt,
+                }
+            };
+
+            this.calendar[dateStr][timeStr] = itemObj;
+            return itemObj;
+        }
+
+        const id = uuid();   
+        const itemObj: CalendarItem = {
+            id: id,
+            dateStr: dateStr,
+            date: dateInstance,
+            data: data
+        }
+
+        this.calendar[dateStr] = { default: itemObj, ...this.calendar };
+        return itemObj;
     };
 
     public getYears(years: string | number) {
