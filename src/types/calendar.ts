@@ -6,14 +6,16 @@
 //     }
 // }
 
+export interface ItemTimes {
+    [times: string]: CalendarItem | CalendarItem[];
+}
+
 export interface CalendarObj {
-    [dates: string]: {
-        [times: string]: CalendarItem
-    }
+    [dates: string]: ItemTimes;
 }
 
 export interface CalendarItem {
-    id: string;
+    id: string | number;
     dateStr: string;
     date: Date;
     data: string | number | {
@@ -22,7 +24,8 @@ export interface CalendarItem {
     duration?: {
         hours: number;
         minutes: number;
-    }
+    },
+    type: 'time' | 'default';
     time?: {
         str: string;
         hour: number;
@@ -38,5 +41,26 @@ export interface CalendarItem {
         hour: number;
         minute: number;
     }
+}
+
+export interface GetDateUtil {
+    month: {
+        name: string;
+        date: number
+    };
+    day: {
+        name: string;
+        date: number;
+    };
+    year: number;
+    date: Date;
+    dateStr: string;
+    leap: boolean;
+}
+
+export interface GetDate extends GetDateUtil {
+    items: {
+        [times: string]: CalendarItem | CalendarItem[];
+    };
 }
 
