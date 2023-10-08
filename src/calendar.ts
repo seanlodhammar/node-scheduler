@@ -1,11 +1,13 @@
 import { v4 as uuid } from 'uuid';
-import { GetDate, getDate as getDateUtil } from './util/date';
+import { GetDate as GetDateUtil, getDate as getDateUtil } from './util/date';
 import { getAllMonths, separateDateAndParse } from './util/util';
-import { CalendarObj, CalendarItem } from './types/calendar';
-import { DatesOrFalse } from './util/util';
+import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar';
+
+// Replace all false returns with errors for better typing
 
 export class Calendar {
     private calendar : CalendarObj = {};
+    private calendarItems : CalendarItem[] = [];
     private config : 'eu' | 'us' = 'eu';
     
     constructor(configuration?: 'eu' | 'us', existingCalendar?: CalendarObj) {
@@ -20,16 +22,24 @@ export class Calendar {
         }
     }
 
-    public getItem(id: string) {
+    public getItemById(id: string) {
         
     };
 
+    public getItemsByDate(date: string | Date = new Date()): ItemTimes | false {
+        const data = this.getDate(date);
+        if(!data || !data.items) {
+            return false;
+        }
+        return data.items;
+    }
+
     // "date" in form of "10/10/2023" or "10/10/23"
-    public getDate(date?: string | Date): GetDate | false {
+    public getDate(date: string | Date = new Date()): GetDate | false {
         try {
-            const data = getDateUtil(date ?? new Date(), this.config);
+            const data = getDateUtil(date, this.config);
             if(!data) return false;
-            return { items: this.calendar[data.dateStr] || null, ...data }; // add additional data such as custom calendar item data
+            return { items: this.calendar[data.dateStr] || null, ...data };
         } catch (err) {
             console.log(err);
             return false;
@@ -83,14 +93,11 @@ export class Calendar {
 
     }
 
-
-    public setItem(date: Date | string, data: CalendarItem['data'], options?: { time?: string; startTime?: string; endTime?: string; }) {
+    // Make options.startTime && options.endTime work
+    public setItem(date: Date | string, data: CalendarItem['data'], options?: { time?: string; startTime?: string; endTime?: string; id?: string | number }): CalendarItem | false {
         const dateData = this.getDate(date);
-
         if(!dateData) return false;
-
         const { dateStr, date: dateInstance } = dateData;
-
 
         if(options && options.time) {
  
@@ -106,7 +113,13 @@ export class Calendar {
             if(hourInt < 0 || hourInt > 23 || minuteInt < 0 || minuteInt > 59) return false;
             if(hour.length > 2 || minute.length > 2 || time.length < 3) return false;
         
-            const id = uuid();
+            let id;
+
+            if(options.id) {
+                id = options.id;
+            } else {
+                id = uuid();
+            }
 
             let hourStr = hour;
             let minuteStr = minute;
@@ -125,6 +138,7 @@ export class Calendar {
                 id: id,
                 dateStr: dateStr,
                 date: dateInstance,
+                type: 'time',
                 data: data,
                 duration: {
                     hours: 0,
@@ -144,6 +158,17 @@ export class Calendar {
                     enumerable: true,
                     writable: true
                 });
+            };
+
+            const timeObj = this.calendar[dateStr][timeStr];
+            if(timeObj) {
+                if(Array.isArray(timeObj)) {
+                    this.calendar[dateStr]['default'] = [itemObj, ...timeObj];
+                } else if(typeof timeObj === 'object') {
+                    this.calendar[dateStr]['default'] = [itemObj, timeObj];
+                }
+                this.calendarItems.push(itemObj);
+                return itemObj;
             }
 
             Object.defineProperty(this.calendar[dateStr], timeStr, {
@@ -152,17 +177,26 @@ export class Calendar {
                 enumerable: true,
                 writable: true,
             });
+
+            this.calendarItems.push(itemObj);
             
             return itemObj;
         }
 
+        let id;
 
-        const id = uuid();   
+        if(options && options.id) {
+            id = options.id;
+        } else {
+            id = uuid();   
+        }
+
         const itemObj: CalendarItem = {
             id: id,
             dateStr: dateStr,
             date: dateInstance,
-            data: data
+            data: data,
+            type: 'default',
         }
 
         if(!this.calendar[dateStr]) {
@@ -171,7 +205,18 @@ export class Calendar {
                 configurable: true,
                 enumerable: true,
                 writable: true
-            });
+            });;
+        }
+
+        const defaultObj = this.calendar[dateStr]['default'];
+        if(defaultObj) {
+            if(Array.isArray(defaultObj)) {
+                this.calendar[dateStr]['default'] = [itemObj, ...defaultObj];
+            } else if(typeof defaultObj === 'object') {
+                this.calendar[dateStr]['default'] = [itemObj, defaultObj];
+            }
+            this.calendarItems.push(itemObj);
+            return itemObj;
         }
 
         Object.defineProperty(this.calendar[dateStr], 'default', {
@@ -181,8 +226,58 @@ export class Calendar {
             writable: true,
         });
 
+        this.calendarItems.push(itemObj);
+
         return itemObj;
     };
+
+    public removeItem(id: string | number) : boolean 
+    {
+        console.log(this.calendar);
+        const find = this.calendarItems.findIndex(item => item.id.toString() === id.toString());
+        if(find === -1 || find === null || find == undefined) {
+            return false;
+        }
+
+        const arrItem = this.calendarItems[find];
+        const calendar = this.calendar;
+        const dateObj = calendar[arrItem.dateStr];
+        
+        let typeKey;
+
+        if(arrItem.type === 'default') {
+            typeKey = 'default';
+        } else if(arrItem.type === 'time' && arrItem.time) {
+            typeKey = arrItem.time.str;
+        } else {
+            return false;
+        };
+
+        const objItem = dateObj[typeKey];
+
+        if(Array.isArray(objItem)) {
+            const itemIndex = objItem.findIndex(item => item.id.toString() === id);
+            if(itemIndex === undefined || itemIndex === null || itemIndex === -1) {
+                return false;
+            }
+            objItem.splice(itemIndex, 1);
+            if(objItem.length === 1) {
+                dateObj[typeKey] = objItem[0]; // converts back to single obj
+            };
+            
+        } else if(!(Array.isArray(objItem)) && typeof objItem === 'object') {
+            delete dateObj[typeKey];
+            delete calendar[arrItem.dateStr];
+        } else {
+            return false;
+        }
+
+        console.log(this.calendar);
+
+        this.calendarItems.splice(find, 1);
+        
+        return true;
+    }
 
     public getYears(years: string | number) {
         // single, e.g. 2021, 2022, 2023, etc.
