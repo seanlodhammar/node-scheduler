@@ -17,7 +17,8 @@ export interface GetDate {
 }
 
 export const getDate = (date: string | Date, config: 'eu' | 'us'): GetDate | false => {
-    const dates = separateDateAndParse(`${date instanceof Date ? date.toLocaleString() : date}`, config);
+    if(!date) return false;
+    const dates = separateDateAndParse(`${date instanceof Date ? date.toLocaleDateString() : date}`, config);
 
     if(!dates) return false;
 
