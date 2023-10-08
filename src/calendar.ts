@@ -27,7 +27,7 @@ export class Calendar {
     // "date" in form of "10/10/2023" or "10/10/23"
     public getDate(date?: string | Date): GetDate | false {
         try {
-            const data = getDateUtil(date || new Date(), this.config);
+            const data = getDateUtil(date ?? new Date(), this.config);
             if(!data) return false;
             return { items: this.calendar[data.dateStr] || null, ...data }; // add additional data such as custom calendar item data
         } catch (err) {
@@ -71,7 +71,7 @@ export class Calendar {
                 if(startMonth !== endMonth) {
                     const monthDiff = endMonth - startMonth;
                     if(monthDiff > 1) {
-                        
+                        console.log('something');
                     }
                 }
                 dates.push(false);
@@ -104,9 +104,22 @@ export class Calendar {
 
             if(isNaN(hourInt) || isNaN(minuteInt)) return false;
             if(hourInt < 0 || hourInt > 23 || minuteInt < 0 || minuteInt > 59) return false;
+            if(hour.length > 2 || minute.length > 2 || time.length < 3) return false;
         
             const id = uuid();
-            const timeStr = `${hourInt}:${minuteInt}`
+
+            let hourStr = hour;
+            let minuteStr = minute;
+
+            if(hourStr.length === 1) {
+                hourStr = `0${hour}`;
+            }
+
+            if(minuteStr.length === 1) {
+                minuteStr = `0${minute}`;
+            }
+
+            const timeStr = `${hourStr}:${minuteStr}`;
 
             const itemObj : CalendarItem = {
                 id: id,
@@ -124,9 +137,25 @@ export class Calendar {
                 }
             };
 
-            this.calendar[dateStr][timeStr] = itemObj;
+            if(!this.calendar[dateStr]) {
+                Object.defineProperty(this.calendar, dateStr, {
+                    value: {},
+                    configurable: true,
+                    enumerable: true,
+                    writable: true
+                });
+            }
+
+            Object.defineProperty(this.calendar[dateStr], timeStr, {
+                value: itemObj,
+                configurable: true,
+                enumerable: true,
+                writable: true,
+            });
+            
             return itemObj;
         }
+
 
         const id = uuid();   
         const itemObj: CalendarItem = {
@@ -136,7 +165,22 @@ export class Calendar {
             data: data
         }
 
-        this.calendar[dateStr] = { default: itemObj, ...this.calendar };
+        if(!this.calendar[dateStr]) {
+            Object.defineProperty(this.calendar, dateStr, {
+                value: {},
+                configurable: true,
+                enumerable: true,
+                writable: true
+            });
+        }
+
+        Object.defineProperty(this.calendar[dateStr], 'default', {
+            value: itemObj,
+            configurable: true,
+            enumerable: true,
+            writable: true,
+        });
+
         return itemObj;
     };
 
