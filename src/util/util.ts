@@ -35,8 +35,14 @@ export const getAllMonths = (year?: string) => {
 }
 
 // date in form of 10/12/23 or 10/12/2023
-export const separateDateAndParse = (date: string, config?: 'eu' | 'us' | 'irrelevant'): DatesOrFalse => {
-    const split = date.split('/');
+export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' | 'irrelevant'): DatesOrFalse => {
+    let dateStr = '';
+    if(date instanceof Date) {
+        dateStr = date.toLocaleDateString();
+    } else {
+        dateStr = date;
+    }
+    const split = dateStr.split('/');
     const dateArr : { int: number; str: string; }[] = [];
     split.forEach((element, _) => {
         const elInt = parseInt(element);

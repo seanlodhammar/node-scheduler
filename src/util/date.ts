@@ -13,12 +13,11 @@ export interface GetDate {
     date: Date;
     dateStr: string;
     leap: boolean;
-    items?: object
 }
 
 export const getDate = (date: string | Date, config: 'eu' | 'us'): GetDate | false => {
     if(!date) return false;
-    const dates = separateDateAndParse(`${date instanceof Date ? date.toLocaleDateString() : date}`, config);
+    const dates = separateDateAndParse(date, config);
 
     if(!dates) return false;
 
