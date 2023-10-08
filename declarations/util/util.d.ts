@@ -19,6 +19,6 @@ export declare const getAllMonths: (year?: string) => {
     name: string;
     days: number;
 }[];
-export declare const separateDateAndParse: (date: string, config?: 'eu' | 'us' | 'irrelevant') => DatesOrFalse;
+export declare const separateDateAndParse: (date: string | Date, config?: 'eu' | 'us' | 'irrelevant') => DatesOrFalse;
 export declare const days: string[];
 export {};
