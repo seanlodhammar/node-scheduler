@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
-import { GetDate as GetDateUtil, getDate as getDateUtil } from './util/date';
-import { getAllMonths, separateDateAndParse } from './util/util';
+import { getDate as getDateUtil } from './util/date';
+import { getAllMonths } from './util/util';
 import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar';
 
 // Replace all false returns with errors for better typing

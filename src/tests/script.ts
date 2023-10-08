@@ -10,5 +10,7 @@ const getCurrentDate = calendar.getDate();
 const getItem1Date = calendar.getDate('12/12/2023');
 const getOtherDate = calendar.getDate('13/12/2023');
 
+console.log(calendar.getItemsByDate(''));
+
 // console.log(getOtherDate);
 // console.log(getOtherDate);

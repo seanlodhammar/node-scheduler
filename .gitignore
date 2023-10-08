@@ -1,2 +1,4 @@
 node_modules
 dist
+declarations/tests
+declarations/index.d.ts
