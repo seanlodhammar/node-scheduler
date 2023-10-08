@@ -45,9 +45,8 @@ export const separateDateAndParse = (date: string, config?: 'eu' | 'us' | 'irrel
         }
         dateArr.push({ int: elInt, str: element });
     });
-    if(dateArr.length < 3 || dateArr.length > 3) {
-        return false;
-    }
+
+    const yearDate = new Date();
 
     const months = getAllMonths();
     let day;
@@ -57,17 +56,24 @@ export const separateDateAndParse = (date: string, config?: 'eu' | 'us' | 'irrel
     if(config === 'eu' || config === 'irrelevant') {
         day = dateArr[0].int;
         month = dateArr[1].int;
-        year = dateArr[2].int;
     }
     if(config === 'us') {
         month = dateArr[0].int;
         day = dateArr[1].int;
+    }
+
+    if(!dateArr[2] || !dateArr[2].int || !dateArr[2].str) {
+        year = yearDate.getFullYear();
+        dateArr.push({ int: year, str: year.toString() })
+    } else {
         year = dateArr[2].int;
     }
 
     if(!month || !day || !year) {
         return false;
     }
+
+    if(dateArr.length < 3 || dateArr.length > 3) return false;
 
     const monthObj = months[month - 1];
     if(!monthObj || month > 12 || month < 1) return false;
@@ -87,7 +93,7 @@ export const separateDateAndParse = (date: string, config?: 'eu' | 'us' | 'irrel
     let yearStr = dateArr[2].str;
 
     if(yearStr.length === 2) {
-        const strPrefix = new Date().getFullYear().toString().slice(0, 2);
+        const strPrefix = yearDate.getFullYear().toString().slice(0, 2);
         yearStr = `${strPrefix}${yearStr}`;
     }
 
