@@ -1,9 +1,9 @@
 import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar';
 export declare class Calendar {
-    private calendar;
-    private calendarItems;
     private config;
-    constructor(configuration?: 'eu' | 'us', existingCalendar?: CalendarObj);
+    private calendarItems;
+    private calendar;
+    constructor(configuration?: 'eu' | 'us');
     getItemById(id: string): void;
     getItemsByDate(date?: string | Date): ItemTimes | false;
     getDate(date?: string | Date): GetDate | false;
@@ -16,5 +16,10 @@ export declare class Calendar {
     }): CalendarItem | false;
     removeItem(id: string | number): boolean;
     getYears(years: string | number): void;
-    get get(): CalendarObj;
+    register(existingCalendar: object): false | undefined;
+    get get(): {
+        scheduler: string;
+        config: "eu" | "us";
+        items: CalendarObj;
+    };
 }

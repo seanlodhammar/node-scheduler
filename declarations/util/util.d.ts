@@ -1,3 +1,4 @@
+import { CalendarObj } from "../types/calendar";
 interface Dates {
     day: {
         str: string;
@@ -19,6 +20,11 @@ export declare const getAllMonths: (year?: string) => {
     name: string;
     days: number;
 }[];
-export declare const separateDateAndParse: (date: string | Date, config?: 'eu' | 'us' | 'irrelevant') => DatesOrFalse;
+export declare const separateDateAndParse: (date: string | Date, config: 'eu' | 'us') => DatesOrFalse;
 export declare const days: string[];
+export declare const sanitizeCalendar: (calendar: {
+    [props: string]: any;
+    [props: number]: any;
+    [props: symbol]: any;
+}) => CalendarObj | false;
 export {};
