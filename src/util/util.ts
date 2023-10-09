@@ -143,6 +143,8 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 // checks for certain fields in object and changes/ignores any keys which may be changed
+
+
 export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj | false => {
     const sanitizedCalendar = {};
     const dateKeys = Object.keys(calendar.items);
@@ -150,38 +152,8 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
         return {};
     }
     for(let dateKey of dateKeys) {
-        if(typeof dateKey !== 'string' || !dateKey.includes('/')) continue;
-
-        const validDate = separateDateAndParse(dateKey, 'eu');
-        console.log(validDate);
-
-        if(!validDate) continue;
-
-        const dateObj = calendar.items[dateKey];
-        const nestedKeys = Object.keys(dateObj);
-        
-        for(let nestedKey of nestedKeys) {
-            if(nestedKey === 'default') {
-
-            } else {
-
-                const timeObj = dateObj[nestedKey];
-
-                if(Array.isArray(timeObj)) {
-                    for(let item of timeObj) {
-
-                    }
-                } else if(typeof timeObj === 'object' && !Array.isArray(timeObj)) {
-                    console.log(timeObj);
-                }
-
-                const formattedTime = formatTimeStr(nestedKey);
-                if(!formattedTime) return false;
-
-            };
-
-        }
-
-    }
-    return {};
+        const dateObj = calendar[dateKey];
+        const timeKeys = Object.keys(dateObj);
+    };
+    return sanitizedCalendar;
 }
