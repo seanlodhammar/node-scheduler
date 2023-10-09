@@ -142,6 +142,7 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+// checks for certain fields in object and changes/ignores any keys which may be changed
 export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj | false => {
     const sanitizedCalendar = {};
     const dateKeys = Object.keys(calendar.items);
@@ -167,7 +168,9 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
                 const timeObj = dateObj[nestedKey];
 
                 if(Array.isArray(timeObj)) {
+                    for(let item of timeObj) {
 
+                    }
                 } else if(typeof timeObj === 'object' && !Array.isArray(timeObj)) {
                     console.log(timeObj);
                 }
