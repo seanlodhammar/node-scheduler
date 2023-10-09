@@ -1,3 +1,5 @@
+import { CalendarObj } from "../types/calendar";
+
 interface Dates {
     day: {
         str: string;
@@ -34,8 +36,32 @@ export const getAllMonths = (year?: string) => {
     return months;
 }
 
+const formatTimeStr = (time: string) => {
+    if(!time.includes(':')) return false;
+    const timeSplit = time.split(':');
+    const hoursParse = parseInt(timeSplit[0]);
+    const minutesParse = parseInt(timeSplit[1]);
+    if(isNaN(hoursParse) || isNaN(minutesParse)) return false;
+    if(hoursParse < 0 || hoursParse > 23 || minutesParse < 0 || minutesParse > 59) return false;
+
+    let hoursStr = timeSplit[0];
+    if(hoursStr.length === 1) {
+        hoursStr = `0${hoursStr}`;
+    }
+
+    let minutesStr = timeSplit[1];
+    if(minutesStr.length === 1) {
+        minutesStr = `0${minutesStr}`;
+    };
+
+    if(hoursStr.length > 2 || minutesStr.length > 2 || minutesStr.length <= 1 || hoursStr.length <= 1) return false;
+
+    const timeStr = `${hoursStr}:${minutesStr}`;
+    return timeStr;
+}
+
 // date in form of 10/12/23 or 10/12/2023
-export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' | 'irrelevant'): DatesOrFalse => {
+export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): DatesOrFalse => {
     let dateStr = '';
     if(date instanceof Date) {
         dateStr = date.toLocaleDateString();
@@ -59,7 +85,7 @@ export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' |
     let month;
     let year;
     
-    if(config === 'eu' || config === 'irrelevant') {
+    if(config === 'eu') {
         day = dateArr[0].int;
         month = dateArr[1].int;
     }
@@ -79,6 +105,7 @@ export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' |
         return false;
     }
 
+
     if(dateArr.length < 3 || dateArr.length > 3) return false;
 
     const monthObj = months[month - 1];
@@ -95,6 +122,7 @@ export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' |
     if(monthStr.length === 1) {
         monthStr = `0${month}`;
     };
+
 
     let yearStr = dateArr[2].str;
 
@@ -113,3 +141,44 @@ export const separateDateAndParse = (date: string | Date, config?: 'eu' | 'us' |
 }
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj | false => {
+    const sanitizedCalendar = {};
+    const dateKeys = Object.keys(calendar.items);
+    if(dateKeys.length < 1) {
+        return {};
+    }
+    for(let dateKey of dateKeys) {
+        if(typeof dateKey !== 'string' || !dateKey.includes('/')) continue;
+
+        const validDate = separateDateAndParse(dateKey, 'eu');
+        console.log(validDate);
+
+        if(!validDate) continue;
+
+        const dateObj = calendar.items[dateKey];
+        const nestedKeys = Object.keys(dateObj);
+        
+        for(let nestedKey of nestedKeys) {
+            if(nestedKey === 'default') {
+
+            } else {
+
+                const timeObj = dateObj[nestedKey];
+
+                if(Array.isArray(timeObj)) {
+
+                } else if(typeof timeObj === 'object' && !Array.isArray(timeObj)) {
+                    console.log(timeObj);
+                }
+
+                const formattedTime = formatTimeStr(nestedKey);
+                if(!formattedTime) return false;
+
+            };
+
+        }
+
+    }
+    return {};
+}
