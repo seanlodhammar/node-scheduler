@@ -1,19 +1,16 @@
 import { v4 as uuid } from 'uuid';
 import { getDate as getDateUtil } from './util/date';
-import { getAllMonths } from './util/util';
+import { getAllMonths, sanitizeCalendar } from './util/util';
 import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar';
 
 // Replace all false returns with errors for better typing
 
 export class Calendar {
-    private calendar : CalendarObj = {};
-    private calendarItems : CalendarItem[] = [];
     private config : 'eu' | 'us' = 'eu';
+    private calendarItems : CalendarItem[] = [];
+    private calendar : CalendarObj = {};
     
-    constructor(configuration?: 'eu' | 'us', existingCalendar?: CalendarObj) {
-        if(existingCalendar) {
-            this.calendar = existingCalendar;
-        };
+    constructor(configuration?: 'eu' | 'us') {
         if(configuration) {
             if(configuration !== 'us' && configuration !== 'eu') {
                 return;
@@ -233,7 +230,6 @@ export class Calendar {
 
     public removeItem(id: string | number) : boolean 
     {
-        console.log(this.calendar);
         const find = this.calendarItems.findIndex(item => item.id.toString() === id.toString());
         if(find === -1 || find === null || find == undefined) {
             return false;
@@ -256,7 +252,7 @@ export class Calendar {
         const objItem = dateObj[typeKey];
 
         if(Array.isArray(objItem)) {
-            const itemIndex = objItem.findIndex(item => item.id.toString() === id);
+            const itemIndex = objItem.findIndex(item => item.id.toString() === id.toString());
             if(itemIndex === undefined || itemIndex === null || itemIndex === -1) {
                 return false;
             }
@@ -271,8 +267,6 @@ export class Calendar {
         } else {
             return false;
         }
-
-        console.log(this.calendar);
 
         this.calendarItems.splice(find, 1);
         
@@ -298,7 +292,17 @@ export class Calendar {
         }
     }
 
+    public register(existingCalendar: object) {
+        if('scheduler' in existingCalendar && 'config' in existingCalendar && 'items' in existingCalendar) {
+            const sanitizedCalendar = sanitizeCalendar(existingCalendar);
+            if(!sanitizedCalendar) {
+                return false;
+            }
+            this.calendar = sanitizedCalendar;
+        };
+    }
+
     get get() {
-        return this.calendar;
+        return { scheduler: 'calendar', config: this.config, items: this.calendar };
     }
 }
