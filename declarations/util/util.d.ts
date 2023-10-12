@@ -26,5 +26,5 @@ export declare const sanitizeCalendar: (calendar: {
     [props: string]: any;
     [props: number]: any;
     [props: symbol]: any;
-}) => CalendarObj | false;
+}) => CalendarObj;
 export {};

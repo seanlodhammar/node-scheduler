@@ -4,18 +4,7 @@ export interface ItemTimes {
 export interface CalendarObj {
     [dates: string]: ItemTimes;
 }
-export interface CalendarItem {
-    id: string | number;
-    dateStr: string;
-    date: Date;
-    data: string | number | {
-        [props: string]: any;
-    };
-    duration?: {
-        hours: number;
-        minutes: number;
-    };
-    type: 'time' | 'default';
+export interface CalendarItemTimeProps {
     time?: {
         str: string;
         hour: number;
@@ -31,6 +20,19 @@ export interface CalendarItem {
         hour: number;
         minute: number;
     };
+    duration?: {
+        hours: number;
+        minutes: number;
+    };
+}
+export interface CalendarItem extends CalendarItemTimeProps {
+    id: string | number;
+    dateStr: string;
+    date: Date;
+    data: string | number | {
+        [props: string]: any;
+    };
+    type: 'time' | 'default';
 }
 export interface GetDateUtil {
     month: {
