@@ -1,4 +1,4 @@
-import { CalendarObj } from "../types/calendar";
+import { CalendarItem, CalendarItemTimeProps, CalendarObj } from "../types/calendar";
 
 interface Dates {
     day: {
@@ -143,17 +143,141 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 // checks for certain fields in object and changes/ignores any keys which may be changed
+const validateDateTimes = (obj: CalendarItem): object => {
+    const parsedObjs = {};
+    
+    const timeKeys = ['time', 'startTime', 'endTime', 'duration'];
+
+    for(let prop of timeKeys) {
+        if(prop !== 'time' && prop !== 'startTime' && prop !== 'endTime' && prop !== 'duration') continue;
+        const timeProperty = obj[prop];
+
+        if(!timeProperty) continue;
+
+        if(prop === 'duration' && 'hours' in timeProperty && 'minutes' in timeProperty) {
+            if(!timeProperty['hours'] || !timeProperty['minutes']) continue;
+            let hours = timeProperty['hours'];
+            let minutes = timeProperty['minutes'];
+            if(typeof hours !== 'number') {
+                hours = parseInt(hours);
+            }
+            if(typeof minutes !== 'number') {
+                minutes = parseInt(minutes);
+            }
+
+            if(isNaN(hours) || isNaN(minutes)) continue;
+
+            Object.defineProperties(parsedObjs, {
+                hours: {
+                    value: hours,
+                    writable: true,
+                    enumerable: true,
+                    configurable: true,
+                },
+                minutes: {
+                    value: minutes,
+                    writable: true,
+                    enumerable: true,
+                    configurable: true,
+                }
+            })
+            continue;
+        } else if(prop !== 'duration' && 'str' in timeProperty && 'hour' in timeProperty && 'minute' in timeProperty) {
+            let str = timeProperty['str'];
+            let hour = timeProperty['hour'];
+            let minute = timeProperty['minute'];
+
+            if(typeof str !== 'string' || !str.includes(':')) continue;
+            if(typeof hour !== 'number') {
+                hour = parseInt(hour);
+            }
+            if(typeof minute !== 'number') {
+                minute = parseInt(minute);
+            }
+
+            if(isNaN(hour) || isNaN(minute)) continue;
+
+            Object.defineProperties(parsedObjs, {
+                str: {
+                    value: str,
+                    configurable: true,
+                    writable: true,
+                    enumerable: true,
+                },
+                hour: {
+                    value: hour,
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                },
+                minute: {
+                    value: minute,
+                    enumerable: true,
+                    writable: true,
+                    configurable: true,
+                }
+            });
+            continue;
+        }
+        continue;
+    }
+
+    
+    return parsedObjs;
+}
 
 
-export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj | false => {
-    const sanitizedCalendar = {};
+export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj => {
+    const sanitizedCalendar : CalendarObj = {};
+    const error = new Error('Calendar failed to be registered due to unsafe properties');
+
+    if(!('items' in calendar)) throw error;
+
     const dateKeys = Object.keys(calendar.items);
+
     if(dateKeys.length < 1) {
         return {};
     }
     for(let dateKey of dateKeys) {
-        const dateObj = calendar[dateKey];
-        const timeKeys = Object.keys(dateObj);
+        const dateObj = calendar['items'][dateKey];
+        const dateTimeKeys = Object.keys(dateObj);
+        for(let dateTimeKey of dateTimeKeys) {
+            const dateTime = dateObj[dateTimeKey];
+            if(!dateTime) throw error;
+            const { id, dateStr, date, data, type } = dateTime;
+            if(!id || !dateStr || !date || !type || !data) throw error;
+            if((typeof id !== 'string' && typeof id === 'number') || typeof dateStr !== 'string' || !(date instanceof Date) || (type !== 'time' && type !== 'default')) throw error;
+            // at this point, we've confirmed that this does have all of the required, correctly typed properties of CalendarItem
+            const handledTimes = validateDateTimes(dateTime);
+            const obj : CalendarItem = { id: id, dateStr: dateStr, date: date, data: data, type: type, ...handledTimes };
+            if(!sanitizedCalendar[dateKey][dateTimeKey]) {
+                Object.defineProperty(sanitizedCalendar[dateKey], dateTimeKey, {
+                    value: obj,
+                    configurable: true,
+                    writable: true,
+                    enumerable: true,
+                })
+                continue;
+            } else if(sanitizedCalendar[dateKey][dateTimeKey]) {
+                const currentTimeObj = sanitizedCalendar[dateKey][dateTimeKey];
+                if(!Array.isArray(currentTimeObj) && typeof currentTimeObj === 'object') {
+                    Object.defineProperty(sanitizedCalendar[dateKey], dateTimeKey, {
+                        value: [obj, currentTimeObj],
+                        configurable: true,
+                        writable: true,
+                        enumerable: true,
+                    });
+                    continue;
+                } else if(Array.isArray(currentTimeObj)) {
+                    Object.defineProperty(sanitizedCalendar[dateKey], dateTimeKey, {
+                        value: [obj, ...currentTimeObj]
+                    })
+                }
+            } else {
+                continue;
+            }
+
+        }
     };
     return sanitizedCalendar;
 }
