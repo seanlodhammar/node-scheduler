@@ -155,9 +155,11 @@ const validateDateTimes = (obj: CalendarItem): object => {
         if(!timeProperty) continue;
 
         if(prop === 'duration' && 'hours' in timeProperty && 'minutes' in timeProperty) {
-            if(!timeProperty['hours'] || !timeProperty['minutes']) continue;
+            if(timeProperty['hours'] === undefined || timeProperty['minutes'] === undefined) continue;
+
             let hours = timeProperty['hours'];
             let minutes = timeProperty['minutes'];
+
             if(typeof hours !== 'number') {
                 hours = parseInt(hours);
             }
@@ -167,19 +169,14 @@ const validateDateTimes = (obj: CalendarItem): object => {
 
             if(isNaN(hours) || isNaN(minutes)) continue;
 
-            Object.defineProperties(parsedObjs, {
-                hours: {
-                    value: hours,
-                    writable: true,
-                    enumerable: true,
-                    configurable: true,
+            Object.defineProperty(parsedObjs, prop, {
+                value: {
+                    hours: hours,
+                    minutes: minutes
                 },
-                minutes: {
-                    value: minutes,
-                    writable: true,
-                    enumerable: true,
-                    configurable: true,
-                }
+                enumerable: true,
+                configurable: true,
+                writable: true,
             })
             continue;
         } else if(prop !== 'duration' && 'str' in timeProperty && 'hour' in timeProperty && 'minute' in timeProperty) {
@@ -197,31 +194,21 @@ const validateDateTimes = (obj: CalendarItem): object => {
 
             if(isNaN(hour) || isNaN(minute)) continue;
 
-            Object.defineProperties(parsedObjs, {
-                str: {
-                    value: str,
-                    configurable: true,
-                    writable: true,
-                    enumerable: true,
+            Object.defineProperty(parsedObjs, prop, {
+                value: {
+                    str: str,
+                    hour: hour,
+                    minute: minute,
                 },
-                hour: {
-                    value: hour,
-                    enumerable: true,
-                    configurable: true,
-                    writable: true,
-                },
-                minute: {
-                    value: minute,
-                    enumerable: true,
-                    writable: true,
-                    configurable: true,
-                }
+                enumerable: true,
+                configurable: true,
+                writable: true,
+
             });
             continue;
         }
         continue;
     }
-
     
     return parsedObjs;
 }
@@ -241,16 +228,30 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
     for(let dateKey of dateKeys) {
         const dateObj = calendar['items'][dateKey];
         const dateTimeKeys = Object.keys(dateObj);
+        if(sanitizedCalendar[dateKey] === undefined || sanitizedCalendar[dateKey] === null) {
+            Object.defineProperty(sanitizedCalendar, dateKey, {
+               value: {},
+               configurable: true,
+               enumerable: true,
+               writable: true,
+            });
+        }
+
         for(let dateTimeKey of dateTimeKeys) {
             const dateTime = dateObj[dateTimeKey];
             if(!dateTime) throw error;
+
+            if(Array.isArray(dateTime)) {
+                
+            }
+            
             const { id, dateStr, date, data, type } = dateTime;
             if(!id || !dateStr || !date || !type || !data) throw error;
             if((typeof id !== 'string' && typeof id === 'number') || typeof dateStr !== 'string' || !(date instanceof Date) || (type !== 'time' && type !== 'default')) throw error;
             // at this point, we've confirmed that this does have all of the required, correctly typed properties of CalendarItem
             const handledTimes = validateDateTimes(dateTime);
             const obj : CalendarItem = { id: id, dateStr: dateStr, date: date, data: data, type: type, ...handledTimes };
-            if(!sanitizedCalendar[dateKey][dateTimeKey]) {
+            if(sanitizedCalendar[dateKey][dateTimeKey] === undefined || sanitizedCalendar[dateKey][dateTimeKey] === null) {
                 Object.defineProperty(sanitizedCalendar[dateKey], dateTimeKey, {
                     value: obj,
                     configurable: true,
@@ -272,6 +273,9 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
                     Object.defineProperty(sanitizedCalendar[dateKey], dateTimeKey, {
                         value: [obj, ...currentTimeObj]
                     })
+                    continue;
+                } else {
+                    continue;
                 }
             } else {
                 continue;
@@ -279,5 +283,6 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
 
         }
     };
+
     return sanitizedCalendar;
 }
