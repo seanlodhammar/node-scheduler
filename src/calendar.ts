@@ -299,6 +299,7 @@ export class Calendar {
                 return false;
             }
             this.calendar = sanitizedCalendar;
+            console.log(this.calendar)
         };
     }
 
