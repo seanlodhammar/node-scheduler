@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
-import { getDate as getDateUtil } from './util/date';
-import { getAllMonths, sanitizeCalendar } from './util/util';
-import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar';
+import { getDate as getDateUtil } from '../util/date';
+import { sanitizeCalendar } from './util/util';
+import { getAllMonths } from '../util/util';
+import { CalendarObj, CalendarItem, ItemTimes, GetDate } from '../types/calendar';
 
 // Replace all false returns with errors for better typing
 
