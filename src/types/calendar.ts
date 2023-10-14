@@ -63,8 +63,6 @@ export interface GetDateUtil {
     leap: boolean;
 }
 
-
-
 export interface GetDate extends GetDateUtil {
     items: {
         [times: string]: CalendarItem | CalendarItem[];
