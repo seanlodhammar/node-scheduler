@@ -6,6 +6,7 @@ import { CalendarObj, CalendarItem, ItemTimes, GetDate } from './types/calendar'
 // Replace all false returns with errors for better typing
 
 export class Calendar {
+    // proper timezone implementation will be added later on
     private config : 'eu' | 'us' = 'eu';
     private calendarItems : CalendarItem[] = [];
     private calendar : CalendarObj = {};
@@ -299,8 +300,8 @@ export class Calendar {
                 return false;
             }
             this.calendar = sanitizedCalendar;
-            console.log(this.calendar)
         };
+        return false;
     }
 
     get get() {
