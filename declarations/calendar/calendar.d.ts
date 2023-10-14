@@ -7,6 +7,7 @@ export declare class Calendar {
     getItemById(id: CalendarItem['id']): false | CalendarItem;
     getItemsByDate(date?: string | Date): ItemTimes | false;
     getDate(date?: string | Date): GetDate | false;
+    static getDate(): void;
     getDates(startDate: string, endDate: string): false | undefined;
     setItem(date: Date | string, data: CalendarItem['data'], options?: {
         time?: string;
