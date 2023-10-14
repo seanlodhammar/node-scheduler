@@ -24,5 +24,5 @@ We recommend modifying objects relative to the class they were made in, by creat
 
 ## Contact Me
 - Email - <a href='mailto:contact@seanlodhammar.com'>contact@seanlodhammar.com</a>
-- Twitter - <a href='https://twitter/seanlodhammar'>seanlodhammar</a>
+- Twitter - <a href='https://twitter.com/seanlodhammar'>seanlodhammar</a>
 - Discord - <a href='https://discord.com/users/797595451972386836'>seanlod</a>
