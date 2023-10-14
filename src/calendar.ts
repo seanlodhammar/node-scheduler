@@ -20,8 +20,10 @@ export class Calendar {
         }
     }
 
-    public getItemById(id: string) {
-        
+    public getItemById(id: CalendarItem['id']) {
+        const index = this.calendarItems.findIndex(item => item.id.toString() === id.toString());
+        if(index === -1) return false;
+        return this.calendarItems[index];
     };
 
     public getItemsByDate(date: string | Date = new Date()): ItemTimes | false {
@@ -229,7 +231,7 @@ export class Calendar {
         return itemObj;
     };
 
-    public removeItem(id: string | number) : boolean 
+    public removeItem(id: CalendarItem['id']) : boolean 
     {
         const find = this.calendarItems.findIndex(item => item.id.toString() === id.toString());
         if(find === -1 || find === null || find == undefined) {
@@ -305,6 +307,6 @@ export class Calendar {
     }
 
     get get() {
-        return { scheduler: 'calendar', config: this.config, items: this.calendar };
+        return { scheduler: 'calendar', config: this.config, items: this.calendar, arrayItems: this.calendarItems };
     }
 }
