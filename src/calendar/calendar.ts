@@ -47,6 +47,10 @@ export class Calendar {
         }
     }
 
+    static getDate() {
+
+    }
+
     // "date" in form of (0)5/10/2023 or 10/(0)5/2023 depending on config
     // "dates" in form of (0)5/10/2023-10/10/2023 or 10/(0)5/2023-10/10/2023 depending on config
     public getDates(startDate: string, endDate: string) {
