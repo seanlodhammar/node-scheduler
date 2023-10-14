@@ -6,7 +6,7 @@ import { CalendarObj, CalendarItem, ItemTimes, GetDate } from '../types/calendar
 
 // Replace all false returns with errors for better typing
 
-export class Calendar {
+export default class Calendar {
     // proper timezone implementation will be added later on
     private config : 'eu' | 'us' = 'eu';
     private calendarItems : CalendarItem[] = [];
@@ -45,10 +45,6 @@ export class Calendar {
             console.log(err);
             return false;
         }
-    }
-
-    static getDate() {
-
     }
 
     // "date" in form of (0)5/10/2023 or 10/(0)5/2023 depending on config
