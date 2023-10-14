@@ -7,7 +7,7 @@ A backend scheduler that allows you to structure calendars, schedules, roll call
 Each class allows you to have a consistent data structure for it's given object and has methods that give you the ability to make certain Date and Time specific queries which the built in JavaScript Date API doesn't allow for.
 
 ## How to use
-#### ⚠️ **Warning**: These classes are unfinished as of now and should **not** be used in production 
+#### ⚠️ **Warning**: Schedule and Roll are unfinished as of now and should **not** be used in production 
 There are multiple classes such as: <br>
 - <a href='https://github.com/seanlodhammar/node-scheduler/blob/36dd9bdac5d19339cf14df30482163ed0c6ff71a/src/calendar.ts'>`Calendar`</a> 
 - <a href=''>`Roll`</a>
