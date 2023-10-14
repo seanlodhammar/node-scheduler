@@ -1,10 +1,9 @@
 import { CalendarItem, CalendarItemKeys } from "../types/calendar";
+import { unsafePropError } from "../errors/validation";
 
 interface Obj {
     [props: string | symbol | number]: any
 }
-
-const unsafePropError = new Error('Calendar failed to be registered due to unsafe properties');
 
 // checks for certain fields in object and changes/ignores any keys which may be changed
 const validateDateTimes = (obj: Obj): object => {

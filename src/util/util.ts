@@ -1,5 +1,6 @@
 import { CalendarItem, CalendarItemTimeProps, CalendarObj } from "../types/calendar";
 import { validateDate } from "./validation";
+import { unsafePropError } from "../errors/validation";
 
 interface Dates {
     day: {
@@ -143,10 +144,8 @@ export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fr
 
 export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: any }): CalendarObj => {
     const sanitizedCalendar : CalendarObj = {};
-    const error = new Error('Calendar failed to be registered due to unsafe properties');
-
     
-    if(!('items' in calendar)) throw error;
+    if(!('items' in calendar)) throw unsafePropError;
 
     const dateKeys = Object.keys(calendar.items);
 
@@ -167,7 +166,7 @@ export const sanitizeCalendar = (calendar: { [props: string | number | symbol]: 
 
         for(let dateTimeKey of dateTimeKeys) {
             const dateTime = dateObj[dateTimeKey];
-            if(!dateTime) throw error;
+            if(!dateTime) throw unsafePropError;
             
             const item = validateDate(dateTime);
             if(sanitizedCalendar[dateKey][dateTimeKey] === undefined || sanitizedCalendar[dateKey][dateTimeKey] === null) {
