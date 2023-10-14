@@ -1,8 +1,5 @@
-<h1>
-    Node Scheduler
-</h1>
-
-<h3>A backend scheduler that allows you to structure calendars, schedules, roll calls and more</h3>
+# Node Scheduler
+A backend scheduler that allows you to structure calendars, schedules, roll calls and more
 
 ## What is it?
 `node-scheduler` is a package containing multiple classes, allowing you to create different types of object structures with dates and any specific data that you would like to add.
