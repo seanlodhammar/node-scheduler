@@ -34,6 +34,7 @@ export interface CalendarItem extends CalendarItemTimeProps {
     };
     type: 'time' | 'default';
 }
+export declare const CalendarItemKeys: string[];
 export interface GetDateUtil {
     month: {
         name: string;

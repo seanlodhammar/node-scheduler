@@ -16,7 +16,7 @@ export declare class Calendar {
     }): CalendarItem | false;
     removeItem(id: string | number): boolean;
     getYears(years: string | number): void;
-    register(existingCalendar: object): false | undefined;
+    register(existingCalendar: object): boolean;
     get get(): {
         scheduler: string;
         config: "eu" | "us";
