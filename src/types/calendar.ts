@@ -44,8 +44,9 @@ export interface CalendarItem extends CalendarItemTimeProps {
         [props: string]: any;
     };
     type: 'time' | 'default';
+};
 
-}
+export const CalendarItemKeys = ['id', 'dateStr', 'date', 'data', 'type', 'time', 'duration', 'startTime', 'endTime'];
 
 export interface GetDateUtil {
     month: {
