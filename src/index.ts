@@ -1,1 +1,3 @@
-export { Calendar } from "./calendar/calendar";
+import Calendar from "./calendar/calendar";
+
+export { Calendar };
