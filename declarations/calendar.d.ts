@@ -4,7 +4,7 @@ export declare class Calendar {
     private calendarItems;
     private calendar;
     constructor(configuration?: 'eu' | 'us');
-    getItemById(id: string): void;
+    getItemById(id: CalendarItem['id']): false | CalendarItem;
     getItemsByDate(date?: string | Date): ItemTimes | false;
     getDate(date?: string | Date): GetDate | false;
     getDates(startDate: string, endDate: string): false | undefined;
@@ -14,12 +14,13 @@ export declare class Calendar {
         endTime?: string;
         id?: string | number;
     }): CalendarItem | false;
-    removeItem(id: string | number): boolean;
+    removeItem(id: CalendarItem['id']): boolean;
     getYears(years: string | number): void;
     register(existingCalendar: object): boolean;
     get get(): {
         scheduler: string;
         config: "eu" | "us";
         items: CalendarObj;
+        arrayItems: CalendarItem[];
     };
 }
