@@ -1,10 +1,10 @@
-import { CalendarItem, ItemTimes, GetDate } from './types/calendar';
+import { CalendarObj, CalendarItem, ItemTimes, GetDate } from '../types/calendar';
 export declare class Calendar {
     private config;
     private calendarItems;
     private calendar;
     constructor(configuration?: 'eu' | 'us');
-    getItemById(id: CalendarItem['id']): any;
+    getItemById(id: CalendarItem['id']): false | CalendarItem;
     getItemsByDate(date?: string | Date): ItemTimes | false;
     getDate(date?: string | Date): GetDate | false;
     getDates(startDate: string, endDate: string): false | undefined;
