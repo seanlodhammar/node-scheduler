@@ -1,10 +1,4 @@
-// export interface CalendarObj {
-//     [years: string]: {
-//         [months: string]: {
-//             [days: string]: CalendarItem[]
-//         }
-//     }
-// }
+import { StructureItem as CalendarItem } from "./general";
 
 export interface ItemTimes {
     [times: string]: CalendarItem | CalendarItem[];
@@ -13,38 +7,6 @@ export interface ItemTimes {
 export interface CalendarObj {
     [dates: string]: ItemTimes;
 }
-
-export interface CalendarItemTimeProps {
-    time?: {
-        str: string;
-        hour: number;
-        minute: number;
-    }
-    startTime?: {
-        str: string;
-        hour: number;
-        minute: number
-    }
-    endTime?: {
-        str: string;
-        hour: number;
-        minute: number;
-    }
-    duration?: {
-        hours: number;
-        minutes: number;
-    },
-}
-
-export interface CalendarItem extends CalendarItemTimeProps {
-    id: string | number;
-    dateStr: string;
-    date: Date;
-    data: string | number | {
-        [props: string]: any;
-    };
-    type: 'time' | 'default';
-};
 
 export const CalendarItemKeys = ['id', 'dateStr', 'date', 'data', 'type', 'time', 'duration', 'startTime', 'endTime'];
 
