@@ -1,5 +1,5 @@
-import { CalendarItem, CalendarItemKeys } from "../types/calendar";
-import { unsafePropError } from "../errors/validation";
+import { CalendarItem, CalendarItemKeys } from "../../types/calendar";
+import { unsafePropError } from "../../errors/validation";
 
 interface Obj {
     [props: string | symbol | number]: any
