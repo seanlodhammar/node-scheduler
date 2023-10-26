@@ -1,7 +1,8 @@
-import { getAllMonths, days, isLeapYear, separateDateAndParse, DatesOrFalse } from "./util";
+import { getAllMonths, days, isLeapYear, separateDateAndParse } from "./util";
 import { GetDateUtil as GetDate } from "../types/calendar";
+import { DateFormat } from "../types/util";
 
-export const getDate = (date: string | Date, config: 'eu' | 'us'): GetDate | false => {
+export const getDate = (date: string | Date, config: DateFormat): GetDate | false => {
     if(!date) return false;
     const dates = separateDateAndParse(date, config);
 
