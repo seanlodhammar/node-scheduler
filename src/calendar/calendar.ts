@@ -1,24 +1,22 @@
 import { v4 as uuid } from 'uuid';
 import { getDate as getDateUtil } from '../util/date';
 import { sanitizeCalendar } from './util/util';
-import { getAllMonths } from '../util/util';
+import { getAllMonths, handleDateFormat } from '../util/util';
 import { CalendarObj, CalendarItem, ItemTimes, GetDate } from '../types/calendar';
+import { DateFormat } from '../types/util';
 
 // Replace all false returns with errors for better typing
 
 export default class Calendar {
     // proper timezone implementation will be added later on
-    private config : 'eu' | 'us' = 'eu';
     private calendarItems : CalendarItem[] = [];
     private calendar : CalendarObj = {};
+    private config : DateFormat = { day: 0, month: 1, year: 2 };
     
-    constructor(configuration?: 'eu' | 'us') {
-        if(configuration) {
-            if(configuration !== 'us' && configuration !== 'eu') {
-                return;
-            }
-            this.config = configuration;
-        }
+    constructor(configuration: string) {
+        const handledConfig = handleDateFormat(configuration);
+        if(!handledConfig) throw new Error('Invalid date format');
+        this.config = handledConfig;
     }
 
     public getItemById(id: CalendarItem['id']) {
@@ -307,7 +305,7 @@ export default class Calendar {
         return false;
     }
 
-    get get() {
+    public retrieve() {
         return { scheduler: 'calendar', config: this.config, items: this.calendar, arrayItems: this.calendarItems };
     }
 }
