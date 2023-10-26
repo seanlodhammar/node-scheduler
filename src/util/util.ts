@@ -1,4 +1,5 @@
 import { Dates } from "../types/util";
+import { invalidDateFormat } from "../errors/util";
 
 export type DatesOrFalse = Dates | false;
 
@@ -123,3 +124,11 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
 }
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const handleDateFormat = (format: string) => {
+    const split = format.split('-');
+    if(split.length < 2) throw invalidDateFormat;
+    if(split.length < 3) {
+        
+    }
+}
