@@ -1,0 +1,1 @@
+export const invalidDateFormat = new Error('Invalid date format. Date format string must be in the form of "dd-mm-yyyy"');

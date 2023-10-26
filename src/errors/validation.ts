@@ -1,0 +1,1 @@
+export const unsafePropError = new Error('Calendar failed to be registered due to unsafe properties');
