@@ -2,8 +2,9 @@ import { v4 as uuid } from 'uuid';
 import { getDate as getDateUtil } from '../util/date';
 import { sanitizeCalendar } from './util/util';
 import { getAllMonths, handleDateFormat } from '../util/util';
-import { CalendarObj, CalendarItem, ItemTimes, GetDate } from '../types/calendar';
+import { CalendarObj, ItemTimes, GetDate } from '../types/calendar';
 import { DateFormat } from '../types/util';
+import { StructureItem as CalendarItem } from '../types/general';
 
 // Replace all false returns with errors for better typing
 
