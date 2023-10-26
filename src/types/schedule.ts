@@ -1,7 +1,17 @@
-interface ScheduleObj {
-
+export interface ScheduleObj {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
 }
 
-interface ScheduleItem {
+export interface ScheduleDay {
+    [times: string]: ScheduleItem | ScheduleItem[];
+}
+
+export interface ScheduleItem {
 
 }
