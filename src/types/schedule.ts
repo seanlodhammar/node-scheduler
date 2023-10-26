@@ -1,3 +1,5 @@
+import { StructureItem as ScheduleItem } from "./general";
+
 export interface ScheduleObj {
     monday: string;
     tuesday: string;
@@ -12,6 +14,3 @@ export interface ScheduleDay {
     [times: string]: ScheduleItem | ScheduleItem[];
 }
 
-export interface ScheduleItem {
-
-}
