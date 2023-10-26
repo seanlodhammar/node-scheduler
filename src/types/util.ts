@@ -15,3 +15,11 @@ export interface Dates {
 
     dateString: string;
 }
+
+export interface DateFormat {
+    day: number;
+    month: number;
+    year: number;
+}
+
+export type DatesOrFalse = Dates | false;
