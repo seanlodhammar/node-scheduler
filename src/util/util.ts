@@ -1,7 +1,5 @@
-import { Dates } from "../types/util";
+import { DateFormat, DatesOrFalse } from "../types/util";
 import { invalidDateFormat } from "../errors/util";
-
-export type DatesOrFalse = Dates | false;
 
 export const isLeapYear = (year?: string): boolean =>  {
     const yearStr = year || '';
@@ -46,7 +44,8 @@ const formatTimeStr = (time: string) => {
 }
 
 // date in form of 10/12/23 or 10/12/2023
-export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): DatesOrFalse => {
+// Not working with new "config" param
+export const separateDateAndParse = (date: string | Date, config: DateFormat): DatesOrFalse => {
     let dateStr = '';
     if(date instanceof Date) {
         dateStr = date.toLocaleDateString();
@@ -66,24 +65,18 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
     const yearDate = new Date();
 
     const months = getAllMonths();
-    let day;
-    let month;
-    let year;
-    
-    if(config === 'eu') {
-        day = dateArr[0].int;
-        month = dateArr[1].int;
-    }
-    if(config === 'us') {
-        month = dateArr[0].int;
-        day = dateArr[1].int;
-    }
 
-    if(!dateArr[2] || !dateArr[2].int || !dateArr[2].str) {
+    const day = dateArr[config.day].int;
+    const month = dateArr[config.month].int;
+
+    let year;
+
+
+    if(!dateArr[config.year] || !dateArr[config.year].int || !dateArr[config.year].str || dateArr[config.year].str.length !== 4) {
         year = yearDate.getFullYear();
         dateArr.push({ int: year, str: year.toString() })
     } else {
-        year = dateArr[2].int;
+        year = dateArr[config.year].int;
     }
 
     if(!month || !day || !year) {
@@ -125,10 +118,18 @@ export const separateDateAndParse = (date: string | Date, config: 'eu' | 'us'): 
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const handleDateFormat = (format: string) => {
+export const handleDateFormat = (format: string): DateFormat | false => {
+    console.log(format);
+    if(!format.includes('-')) return false;
     const split = format.split('-');
-    if(split.length < 2) throw invalidDateFormat;
-    if(split.length < 3) {
-        
-    }
+    if(split.length !== 3) return false;
+    
+    const dayIndex = split.indexOf('dd');
+    const monthIndex = split.indexOf('mm');
+    const yearIndex = split.indexOf('yyyy');
+
+    if(dayIndex === -1 || monthIndex === -1 || yearIndex === -1) return false;
+
+    return { day: dayIndex, month: monthIndex, year: yearIndex };
+
 }
